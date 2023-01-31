@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_app/providers/cart_provider.dart';
+import 'package:shopping_app/providers/cart.dart';
 
 class CheckoutScreen extends StatelessWidget {
   static const route = '/checkout-screen';
@@ -9,7 +9,7 @@ class CheckoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
+    final cart = Provider.of<Cart>(context);
     final cartItems = cart.items.values.toList();
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +51,7 @@ class CheckoutScreen extends StatelessWidget {
                     direction: DismissDirection.endToStart,
                     secondaryBackground: const Icon(Icons.delete),
                     onDismissed: (direction) {
-                      cart.removeItem(cartItems[index].productId);
+                      cart.removeItem(cartItems[index].id);
                     },
                     child: Card(
                       child: Container(
