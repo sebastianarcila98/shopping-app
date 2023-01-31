@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shopping_app/screens/checkout_screen.dart';
 import '../widgets/product_grid.dart';
 
 enum ProductListType { All, Favorite }
@@ -38,6 +39,12 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
               ),
             ],
           ),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(CheckoutScreen.route);
+            },
+            icon: const Icon(Icons.shopping_cart),
+          )
         ],
       ),
       body: Container(
