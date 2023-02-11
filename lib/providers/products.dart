@@ -64,15 +64,18 @@ class Products with ChangeNotifier {
         'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/products.json');
     try {
       final response = await http.get(url);
-      final Map<String, dynamic> productsData = json.decode(response.body);
+      final Map<String, dynamic> extractedData = json.decode(response.body);
       final List<Product> productList = [];
-      productsData.forEach((key, value) {
+      if (extractedData.isEmpty) return;
+      extractedData.forEach((key, value) {
         productList.add(Product(
-            id: key,
-            title: value['title'],
-            description: value['description'],
-            price: value['price'],
-            imageUrl: value['imageUrl']));
+          id: key,
+          title: value['title'],
+          description: value['description'],
+          price: value['price'],
+          imageUrl: value['imageUrl'],
+          isFavorite: value['isFavorite'],
+        ));
       });
       _items = productList;
       notifyListeners();

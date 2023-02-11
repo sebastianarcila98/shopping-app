@@ -30,7 +30,15 @@ class ProductItem extends StatelessWidget {
               ),
               color: Theme.of(context).colorScheme.secondary,
               onPressed: () {
-                product.toggleFavoriteStatus();
+                product.toggleFavoriteStatus().catchError((onError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Center(
+                        child: Text('Unable favorite item. Try again later.'),
+                      ),
+                    ),
+                  );
+                });
               },
             ),
           ),

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +20,25 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() {
+  // id param is not required because the id of product will always belong to that of the instance that called the method
+  Future<void> toggleFavoriteStatus() async {
+    final url = Uri.parse(
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/products/$id.json');
     isFavorite = !isFavorite;
     notifyListeners();
+    try {
+      final response = await http.patch(url,
+          body: json.encode({
+            'isFavorite': isFavorite,
+          }));
+
+      if (response.statusCode >= 400) {
+        throw Exception();
+      }
+    } catch (_) {
+      isFavorite = !isFavorite;
+      notifyListeners();
+      rethrow;
+    }
   }
 }
