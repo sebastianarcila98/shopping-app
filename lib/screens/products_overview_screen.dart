@@ -20,68 +20,69 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorites = false;
-  var _isInit = false;
-  var _isLoading = true;
+  late Future _productsFuture;
 
   @override
-  void didChangeDependencies() {
-    if (!_isInit) {
-      Provider.of<Products>(context).getProducts().then((_) {
-        setState(() {
-          _isInit = true;
-          _isLoading = false;
-        });
-      });
-    }
-    super.didChangeDependencies();
+  void initState() {
+    _productsFuture =
+        Provider.of<Products>(context, listen: false).getProducts();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MyShop'),
-        actions: <Widget>[
-          PopupMenuButton(
-            onSelected: (FilterOptions selectedValue) {
-              setState(() {
-                if (selectedValue == FilterOptions.Favorites) {
-                  _showOnlyFavorites = true;
-                } else {
-                  _showOnlyFavorites = false;
-                }
-              });
-            },
-            icon: const Icon(
-              Icons.more_vert,
-            ),
-            itemBuilder: (_) => [
-              const PopupMenuItem(
-                value: FilterOptions.Favorites,
-                child: Text('Only Favorites'),
+        appBar: AppBar(
+          title: const Text('MyShop'),
+          actions: <Widget>[
+            PopupMenuButton(
+              onSelected: (FilterOptions selectedValue) {
+                setState(() {
+                  if (selectedValue == FilterOptions.Favorites) {
+                    _showOnlyFavorites = true;
+                  } else {
+                    _showOnlyFavorites = false;
+                  }
+                });
+              },
+              icon: const Icon(
+                Icons.more_vert,
               ),
-              const PopupMenuItem(
-                value: FilterOptions.All,
-                child: Text('Show All'),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(
-              Icons.shopping_cart,
+              itemBuilder: (_) => [
+                const PopupMenuItem(
+                  value: FilterOptions.Favorites,
+                  child: Text('Only Favorites'),
+                ),
+                const PopupMenuItem(
+                  value: FilterOptions.All,
+                  child: Text('Show All'),
+                ),
+              ],
             ),
-            onPressed: () {
-              Navigator.of(context).pushNamed(CartScreen.routeName);
-            },
-          ),
-        ],
-      ),
-      drawer: const AppDrawer(),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ProductsGrid(_showOnlyFavorites),
-    );
+            IconButton(
+              icon: const Icon(
+                Icons.shopping_cart,
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
+            ),
+          ],
+        ),
+        drawer: const AppDrawer(),
+        body: FutureBuilder(
+          future: _productsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text('Error occured loading products.'),
+              );
+            } else {
+              return ProductsGrid(_showOnlyFavorites);
+            }
+          },
+        ));
   }
 }
