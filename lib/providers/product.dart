@@ -21,23 +21,24 @@ class Product with ChangeNotifier {
   });
 
   // id param is not required because the id of product will always belong to that of the instance that called the method
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String authToken, String userId) async {
     final url = Uri.parse(
-        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/products/$id.json');
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken');
     isFavorite = !isFavorite;
     notifyListeners();
     try {
-      final response = await http.patch(url,
-          body: json.encode({
-            'isFavorite': isFavorite,
-          }));
+      final response = await http.put(url,
+          body: json.encode(
+            isFavorite,
+          ));
 
       if (response.statusCode >= 400) {
         throw Exception();
       }
-    } catch (_) {
+    } catch (error) {
       isFavorite = !isFavorite;
       notifyListeners();
+      print(error);
       rethrow;
     }
   }

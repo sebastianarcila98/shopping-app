@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import './auth.dart';
 
 import './cart.dart';
 
@@ -21,14 +22,19 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  String? authToken;
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
+  void update(Auth auth) {
+    authToken = auth.token;
+  }
+
   Future<void> getOrders() async {
     final url = Uri.parse(
-        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json');
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
     final response = await http.get(url);
     Map<String, dynamic> extractedData = json.decode(response.body);
     List<OrderItem> loadedOrders = [];
@@ -56,7 +62,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double totalAmount) async {
     final url = Uri.parse(
-        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json');
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
     // creating var with current time allows us to have a consistent time in the server as well as front end when we display the timestamp
     final timestamp = DateTime.now();
     try {
