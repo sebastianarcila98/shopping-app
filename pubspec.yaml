@@ -35,6 +35,7 @@ dependencies:
   intl: ^0.18.0
   provider: ^6.0.5
   http: ^0.13.5
+  shared_preferences: ^2.0.17
 
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to

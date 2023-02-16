@@ -23,6 +23,7 @@ class OrderItem {
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
   String? authToken;
+  String? userId;
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -30,15 +31,16 @@ class Orders with ChangeNotifier {
 
   void update(Auth auth) {
     authToken = auth.token;
+    userId = auth.userId;
   }
 
   Future<void> getOrders() async {
     final url = Uri.parse(
-        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
     final response = await http.get(url);
+    if (response.body == null) return;
     Map<String, dynamic> extractedData = json.decode(response.body);
     List<OrderItem> loadedOrders = [];
-    if (extractedData.isEmpty) return;
     extractedData.forEach((key, value) {
       loadedOrders.insert(
         0,
@@ -62,7 +64,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double totalAmount) async {
     final url = Uri.parse(
-        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders.json?auth=$authToken');
+        'https://shopping-app-flutter-b15e6-default-rtdb.firebaseio.com/orders/$userId.json?auth=$authToken');
     // creating var with current time allows us to have a consistent time in the server as well as front end when we display the timestamp
     final timestamp = DateTime.now();
     try {

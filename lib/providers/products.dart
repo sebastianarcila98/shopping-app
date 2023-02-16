@@ -47,8 +47,10 @@ class Products with ChangeNotifier {
   String? userId;
 
   void update(Auth auth) {
-    authToken = auth.token;
-    userId = auth.userId;
+    if (auth.token != null && auth.userId != null) {
+      authToken = auth.token;
+      userId = auth.userId;
+    }
   }
 
   List<Product> get items {
